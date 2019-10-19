@@ -1,0 +1,101 @@
+<!DOCTYPE html >
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Empathy Box</title>
+    <meta name="description" content="360&deg; Image Gallery - A-Frame">
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+    <script src="https://npmcdn.com/aframe-animation-component@3.0.1"></script>
+    <script src="https://npmcdn.com/aframe-event-set-component@3.0.1"></script>
+    <script src="https://npmcdn.com/aframe-layout-component@3.0.1"></script>
+    <script src="https://npmcdn.com/aframe-template-component@3.1.1"></script>
+    <script src="components/set-image.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <a-assets>
+        <img id="city-thumb" crossorigin="anonymous" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/thumb-city.jpg">
+        <img id="cubes-thumb" crossorigin="anonymous" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/thumb-cubes.jpg">
+        <img id="sechelt-thumb" crossorigin="anonymous" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/thumb-sechelt.jpg">
+	<img id="fold" src="archive/hide.png">
+	<img id="unfold" src="archive/show.png">
+	<audio id="click-sound" crossorigin="anonymous" src="https://cdn.aframe.io/360-image-gallery-boilerplate/audio/click.ogg"></audio>
+        <a-asset-item id="earth-obj" src="archive/CHAHIN_EARTH.obj"></a-asset-item>
+        <a-asset-item id="earth-mtl" src="archive/CHAHIN_EARTH.mtl"></a-asset-item>
+        <video id="video" src="archive/southSudan.mp4" ></video>
+        <video id="video1" src="archive/syria.mp4" ></video>
+        <video id="video2" src="archive/change.mp4" ></video>
+        <!-- Image link template to be reused. -->
+        <script src="play-on-window-click.js"></script>
+	<script id="link" type="text/html">
+          <a-entity class="link"
+            geometry="primitive: plane; height: 1; width: 1"
+            material="shader: flat; src: ${thumb}"
+            event-set__1="_event: mousedown; scale: 1 1 1"
+            event-set__2="_event: mouseup; scale: 1.2 1.2 1"
+            event-set__3="_event: mouseenter; scale: 1.2 1.2 1"
+            event-set__4="_event: mouseleave; scale: 1 1 1"
+            set-image="on: click; target: #videosphere; src: ${src}"
+	    sound="on: click; src: #click-sound"></a-entity>
+        </script>
+	<script id="hide-button" type="text/html">
+          <a-entity class="hide-button"
+            geometry="primitive: plane; height: 0.5; width: 0.5"
+            material="shader: flat; src: ${thumb}"
+            event-set__1="_event: mousedown; scale: 1 1 1"
+            event-set__2="_event: mouseup; scale: 1.2 1.2 1"
+            event-set__3="_event: mouseenter; scale: 1.2 1.2 1"
+            event-set__4="_event: mouseleave; scale: 1 1 1"
+	    sound="on: click; src: #click-sound"></a-entity>
+        </script>
+      </a-assets>
+
+      
+      <a-obj-model id="earth" src="#earth-obj" mtl="#earth-mtl" 
+                  position="0 1 -4"
+                  scale="0.15 0.15 0.15">
+          <a-animation attribute="rotation"
+                       dur="30000"
+                       to="0 360 0"
+                       repeat="indefinite"
+                       easing="linear"></a-animation>
+      </a-obj-model>
+      <a-videosphere id="videosphere" rotation="0 180 0" src="#video"
+	      play-on-window-click></a-videosphere>
+      <!-- Image links. -->
+      <a-entity id="links" layout="type: line; margin: 1.5" position="-1.5 -1 -3">
+        <a-entity template="src: #link" data-src="#video" data-thumb="#cubes-thumb"></a-entity>
+        <a-entity template="src: #link" data-src="#video1" data-thumb="#city-thumb"></a-entity>
+        <a-entity template="src: #link" data-src="#video2" data-thumb="#sechelt-thumb"></a-entity>
+      </a-entity>
+
+      <!-- Camera + cursor. -->
+      <a-entity camera look-controls>
+        <a-cursor id="cursor"
+          animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"
+          animation__fusing="property: fusing; startEvents: fusing; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500"
+          event-set__1="_event: mouseenter; color: springgreen"
+          event-set__2="_event: mouseleave; color: black"
+          fuse="true"
+          raycaster="objects: .link; .hide-button"></a-cursor>
+      </a-entity>
+      <a-entity id="hideButton" template="src: #hide-button" data-thumb="#fold" position="0 -2 -3"></a-entity>
+      <script>
+      	document.querySelector('#hideButton').addEventListener('click', function() {
+		if (document.querySelector("#earth").getAttribute("visible")){
+			document.querySelector("#earth").setAttribute("visible",false);
+			document.querySelector("#links").setAttribute("visible",false);
+			document.querySelector("#hideButton").setAttribute("position","0 0 -3");
+//			document.querySelector("#hideButton").setAttribute("material","shader: flat; src: archive/show.png");
+		} else {
+			document.querySelector("#earth").setAttribute("visible",true);
+			document.querySelector("#links").setAttribute("visible",true);
+			document.querySelector("#hideButton").setAttribute("position","0 -2 -3");
+//			document.querySelector("#hideButton").setAttribute("data-thumb","#fold");
+		}
+		
+	});
+      </script>
+    </a-scene>
+  </body>
+</html>
